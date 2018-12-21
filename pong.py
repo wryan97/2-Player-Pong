@@ -1,3 +1,8 @@
+## Created 12/20/2018
+## Ryan <wryan97 on github>
+
+
+
 
 import pygame, sys
 from pygame.locals import *
@@ -127,7 +132,7 @@ class ScoreBoard():
 
 
 class Game():
-	def __init__(self, line_thickness = 10,speed = 5,):
+	def __init__(self, line_thickness = 10,speed = 5):
 		global BASICFONT
 		BASICFONT = pygame.font.Font('freesansbold.ttf', 20)
 		self.line_thickness = line_thickness
@@ -177,12 +182,23 @@ class Game():
 
 			if self.ball.hit_paddle(self.paddles['user1']):
 				self.ball.bounce('x')
+
 			elif self.ball.hit_paddle(self.paddles['user2']):
 				self.ball.bounce('x')
+
 			elif self.ball.pass_user1():
 				self.score2 += 1
+				ball_x = int(WINDOW_WIDTH/2 - self.line_thickness/2)
+				ball_y = int(WINDOW_HEIGHT/2 - self.line_thickness/2)
+				self.ball = Ball(ball_x,ball_y, self.line_thickness, 
+							self.line_thickness, self.speed)
+
 			elif self.ball.pass_user2():
 				self.score1 += 1
+				ball_x = int(WINDOW_WIDTH/2 - self.line_thickness/2)
+				ball_y = int(WINDOW_HEIGHT/2 - self.line_thickness/2)
+				self.ball = Ball(ball_x,ball_y, self.line_thickness, 
+						self.line_thickness, self.speed)
 
 			self.draw_arena()
 			self.ball.draw()
