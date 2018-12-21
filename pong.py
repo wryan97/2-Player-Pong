@@ -18,7 +18,7 @@ dir_y = -1
 DISPLAYSURF = pygame.display.set_mode((WINDOW_WIDTH,WINDOW_HEIGHT))
 
 # Number of frames per second
-FPS = 50
+FPS = 200
 FPSCLOCK = pygame.time.Clock()
 
 
@@ -207,6 +207,8 @@ def main():
 				if event.key == pygame.K_ESCAPE:
 					pygame.quit()
 					sys.exit()
+				if event.key == pygame.K_t:
+					main()
 				if event.key == pygame.K_w:
 					game.paddles['user1'].move(-1)
 				#S is down for player 1
