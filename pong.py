@@ -12,21 +12,26 @@ from pygame.locals import *
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 
-#Window width and height
+#Window width/height
 WINDOW_HEIGHT = 300
 WINDOW_WIDTH = 400
+
+#Line thickness and paddle height
 line_thickness = 10
 paddle_height = 50
+
+#starts game with ball going towards player 1's upper corner
 dir_x = -1
 dir_y = -1
 
+#sets up window
 DISPLAYSURF = pygame.display.set_mode((WINDOW_WIDTH,WINDOW_HEIGHT))
 
 # Number of frames per second
 FPS = 200
 FPSCLOCK = pygame.time.Clock()
 
-
+#the ball class with its methods
 class Ball():
 	def __init__(self,x,y,w,h,speed):
 		self.x = x
@@ -43,26 +48,32 @@ class Ball():
 	def draw(self):
 		pygame.draw.rect(DISPLAYSURF, WHITE, self.rect)
 
+	#moves the ball in accordance with speed
+	#also uses detection methods for walls and ceilings
 	def move(self, dir_x, dir_y):
 		self.hit_ceiling_floor(dir_y)
 		self.hit_wall()
 		self.rect.x += (self.dir_x * self.speed)
 		self.rect.y += (self.dir_y * self.speed)
 
+	#changes the direction of the ball (if it was about to go out the top, change direction to bottom)
 	def bounce(self,axis):
 		if axis == 'x' :
 			self.dir_x = self.dir_x * -1
 		elif axis == 'y' :
 			self.dir_y = self.dir_y * -1
 
+	#detects if it will hit either the bottom or the top of the window
 	def hit_ceiling_floor(self, dir_y): 
 		if(self.rect.top == (line_thickness) or self.rect.bottom == (WINDOW_HEIGHT - 10)) :
 			self.bounce('y')
 
+	#detects if ball will hit walls of window
 	def hit_wall(self):
 		if(self.rect.left == (line_thickness) or self.rect.right == (WINDOW_WIDTH - 10)):
 			self.bounce('x')
 
+	#detects if ball will hit one of the paddles
 	def hit_paddle(self, paddle): 
 		if (self.dir_x == -1 and paddle.rect.right == self.rect.left and
 			paddle.rect.top < self.rect.top and
@@ -75,14 +86,17 @@ class Ball():
 		else:
 			return False
 
+	#detects if the ball has passed player 1
 	def pass_user1(self):
 		if self.rect.left == line_thickness:
 			return True
 
+	#detects if the ball has passed player 2
 	def pass_user2(self):
 		if self.rect.right == WINDOW_WIDTH - line_thickness:
 			return True
 
+#defines the paddle class and its methods
 class Paddle():
 	def __init__(self,x,w,h):
 		self.x = x
@@ -92,6 +106,7 @@ class Paddle():
 
 		self.rect = pygame.Rect(self.x, self.y, self.w, self.h)
 
+	#draws the paddle
 	def draw(self):
 		#stops if moving too low
 		if self.rect.bottom > WINDOW_HEIGHT - line_thickness:
@@ -102,6 +117,7 @@ class Paddle():
 		#draws paddle
 		pygame.draw.rect(DISPLAYSURF, WHITE, self.rect)
 
+	#moves the paddle up and down
 	def move(self, pos):
 		if pos == 1:
 			self.rect.y = self.rect.y + 40
@@ -110,6 +126,7 @@ class Paddle():
 			self.rect.y = self.rect.y - 40
 			self.draw
 
+#defines the scoreboard class and its methods
 class ScoreBoard():
 	def __init__(self,score1 = 0, score2 = 0, x = WINDOW_WIDTH-150, y = 25, font_size = 20):
 		self.score1 = score1
@@ -118,6 +135,7 @@ class ScoreBoard():
 		self.y = y
 		self.font = pygame.font.Font('freesansbold.ttf', font_size) 
 
+	#displays both the score of player 1 and 2
 	def display(self, score1, score2):
 		result1Surf = BASICFONT.render('Score = %s' %(score2), True, WHITE)
 		result1Rect = result1Surf.get_rect()
@@ -130,7 +148,7 @@ class ScoreBoard():
 		result2Rect.topleft = (WINDOW_WIDTH-350, 25)
 		DISPLAYSURF.blit(result2Surf, result2Rect)
 
-
+#defines the game class and its inner methods
 class Game():
 	def __init__(self, line_thickness = 10,speed = 5):
 		global BASICFONT
@@ -157,12 +175,14 @@ class Game():
 
 		self.scoreboard = ScoreBoard(0, 0)
 
+	#draws the area for the game to be played in
 	def draw_arena(self):
 		DISPLAYSURF.fill(BLACK)
 		pygame.draw.rect(DISPLAYSURF, WHITE, ((0,0),
 			(WINDOW_WIDTH,WINDOW_HEIGHT)), 20)
 		pygame.draw.line(DISPLAYSURF, WHITE, ((WINDOW_WIDTH/2),0),((WINDOW_WIDTH/2),WINDOW_HEIGHT), 3)
 
+	#refreshes the screen to show what has changed in the game
 	def update(self):
 		if (self.score1 == 5):
 			DISPLAYSURF.fill(BLACK)
@@ -182,10 +202,13 @@ class Game():
 
 			if self.ball.hit_paddle(self.paddles['user1']):
 				self.ball.bounce('x')
+				self.ball.move(dir_x, dir_y)
 
 			elif self.ball.hit_paddle(self.paddles['user2']):
 				self.ball.bounce('x')
+				self.ball.move(dir_x, dir_y)
 
+			
 			elif self.ball.pass_user1():
 				self.score2 += 1
 				ball_x = int(WINDOW_WIDTH/2 - self.line_thickness/2)
@@ -240,6 +263,7 @@ def main():
 		game.update()		
 		pygame.display.update()
 		FPSCLOCK.tick(FPS)
+		
 if __name__ == '__main__':
 	main()
 
